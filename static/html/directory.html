@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {{ name }}
+    </title>
+
+    <script>
+        function descend(directory) {
+            let [url, args] = window.location.href.split('?');
+            
+            url += (url.endsWith('/') ? '' : '/') + directory;
+
+            if (args) {
+                url += '?' + args;
+            }
+
+            window.location.href = url;
+        }
+
+        function ascend() {
+            let [url, args] = window.location.href.split('?');
+
+            url = url.split('/').slice(0, -1).join('/');
+
+            if (args) {
+                url += '?' + args;
+            }
+
+            window.location.href = url;
+        }
+
+        function add_directory_icon(directory_element) {
+            if (directory_element.querySelector('.name').innerText == "..") {
+                directory_element.querySelector('.icon').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.854 1.146a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L4 2.707V12.5A2.5 2.5 0 0 0 6.5 15h8a.5.5 0 0 0 0-1h-8A1.5 1.5 0 0 1 5 12.5V2.707l3.146 3.147a.5.5 0 1 0 .708-.708l-4-4z"/></svg>';
+            } else {
+                directory_element.querySelector('.icon').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v7a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 12.5zM2.5 3a.5.5 0 0 0-.5.5V6h12v-.5a.5.5 0 0 0-.5-.5H9c-.964 0-1.71-.629-2.174-1.154C6.374 3.334 5.82 3 5.264 3zM14 7H2v5.5a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5z"/></svg>';
+            }
+        }
+
+        function addicon(file_element) {
+            let icon = {
+                'image': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/><path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12"/></svg>',
+                'video': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696z"/></svg>',
+                'audio': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13c0-1.104 1.12-2 2.5-2s2.5.896 2.5 2m9-2c0 1.105-1.12 2-2.5 2s-2.5-.895-2.5-2 1.12-2 2.5-2 2.5.895 2.5 2"/><path fill-rule="evenodd" d="M14 11V2h1v9zM6 3v10H5V3z"/><path d="M5 2.905a1 1 0 0 1 .9-.995l8-.8a1 1 0 0 1 1.1.995V3L5 4z"/></svg>',
+                'text': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M0 .5A.5.5 0 0 1 .5 0h2a.5.5 0 0 1 0 1h-2A.5.5 0 0 1 0 .5m4 0a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1h-10A.5.5 0 0 1 4 .5m-4 2A.5.5 0 0 1 .5 2h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5m4 0a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m-4 2A.5.5 0 0 1 .5 4h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5m4 0a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m-4 2A.5.5 0 0 1 .5 6h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5m4 0a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 0 1h-8a.5.5 0 0 1-.5-.5m-4 2A.5.5 0 0 1 .5 8h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5m4 0a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 0 1h-8a.5.5 0 0 1-.5-.5m-4 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5m4 0a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1h-10a.5.5 0 0 1-.5-.5m-4 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5m4 0a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m-4 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5m4 0a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/></svg>',
+                'application': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M2.5 4a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1m2-.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m1 .5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/><path d="M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm13 2v2H1V3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1M2 14a1 1 0 0 1-1-1V6h14v7a1 1 0 0 1-1 1z"/></svg>',
+                'default': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M0 0h24v24H0z" fill="none"/><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 14H4V6h16v12z"/></svg>'
+            };
+
+            let mime = file_element.querySelector('.mime').innerText.split('/')[0];
+
+            file_element.querySelector('.icon').innerHTML = icon[mime] || icon['default'];
+        }
+
+        function reformat_modified_time(file_element) {
+            let mtime = file_element.querySelector('.mtime').innerText;
+
+            let date = new Date(parseInt(mtime) * 1000);
+
+            let year = date.getFullYear();
+            let month = date.getMonth() + 1;
+            let day = date.getDate();
+
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            let seconds = date.getSeconds();
+
+            let ampm = hours >= 12 ? 'PM' : 'AM';
+
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+
+            month = month < 10 ? '0' + month : month;
+            day = day < 10 ? '0' + day : day;
+
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            let time = `${year}-${month}-${day} ${hours}:${minutes}:${seconds} ${ampm}`;
+
+            file_element.querySelector('.mtime').innerText = time;
+        }
+
+        function reformat_created_time(file_element) {
+            let ctime = file_element.querySelector('.ctime').innerText;
+
+            let date = new Date(parseInt(ctime) * 1000);
+
+            let year = date.getFullYear();
+            let month = date.getMonth() + 1;
+            let day = date.getDate();
+
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            let seconds = date.getSeconds();
+
+            let ampm = hours >= 12 ? 'PM' : 'AM';
+
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+
+            month = month < 10 ? '0' + month : month;
+            day = day < 10 ? '0' + day : day;
+
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            let time = `${year}-${month}-${day} ${hours}:${minutes}:${seconds} ${ampm}`;
+
+            file_element.querySelector('.ctime').innerText = time;
+        }
+
+        function reformat_size(file_element) {
+            let size = file_element.querySelector('.size').innerText;
+
+            let units = ['B', 'KB', 'MB', 'GB', 'TB'];
+
+            let unit = 0;
+
+            while (size > 1024) {
+                size /= 1024;
+                unit++;
+            }
+
+            size = parseFloat(size).toFixed(2);
+
+            file_element.querySelector('.size').innerText = `${size} ${units[unit]}`;
+        }
+
+        function shorten_name(file_element, limit) {
+            let name = file_element.querySelector('.name').innerText;
+
+            if (name.length > limit) {
+                name = name.slice(0, limit-3) + '...';
+            }
+
+            file_element.querySelector('.name').innerText = name;
+        }
+
+        window.onload = function() {
+            let files = document.querySelectorAll('.files > div:not(.splitter)');
+            let directories = document.querySelectorAll('.directories > div:not(.splitter)');
+
+            for (let file of files) {
+                addicon(file);
+                reformat_modified_time(file);
+                reformat_created_time(file);
+                reformat_size(file);
+                shorten_name(file, 60);
+            }
+
+            for (let directory of directories) {
+                add_directory_icon(directory);
+                shorten_name(directory, 120);
+            }
+        }
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            background: #242424;
+
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            flex-direction: column;
+
+            width: 100%;
+            height: 100%;
+            margin: 0;
+
+            padding: 10px;
+
+            min-width: 1600px;
+            min-height: 800px;
+
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+        .splitter {
+            width: 95%;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.1);
+
+            margin: 10px 0;
+        }
+
+        .files > .splitter:last-child {
+            display: none;
+        }
+
+        h1 {
+            color: #fff;
+            font-family: sans-serif;
+            font-size: 2em;
+            margin: 0;
+            padding: 0.5em;
+        }
+
+        .directories, .files  {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            flex-direction: column;
+        }
+
+        .directories > div:not(.splitter),
+        .files > div:not(.splitter),
+        #header {
+            color: #fff;
+            font-family: sans-serif;
+            font-size: 1.5em;
+            width: 100%;
+            height: 70px;
+            cursor: pointer;
+
+            display: grid;
+            grid-template-columns: 64px 1fr 19% 19% 8%;
+            column-gap: 20px;
+
+            align-items: center;
+            justify-items: center;
+
+            padding: 0 50px;
+        }
+
+        #header > div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #header {
+            cursor: default !important;
+        }
+
+        .directories > div:not(.splitter) {
+            grid-template-columns: 64px 1fr !important;
+        }
+
+        .directories > div:not(.splitter) > *,
+        .files > div:not(.splitter) > * {
+            min-width: unset;
+            text-wrap: nowrap;
+        }
+
+        .directories > div:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .files > div:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .icon {
+            width: 100%;
+            aspect-ratio: 1;
+            fill: currentColor;
+
+            display: flex;
+
+            padding: 12px;
+        }
+
+        .mime {
+            display: none;
+        }
+
+        .name {
+            width: 100%;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ name }}</h1>
+
+    <div id="header">
+        <div class="placeholder"></div>
+        <div class="text">Filename</div>
+        <div class="text">Created at</div>
+        <div class="text">Modified at</div>
+        <div class="text">Size</div>
+    </div>
+
+    <div class="directories">
+        <div onclick="ascend()">
+            <div class="icon"></div>
+            <div class="name">..</div>
+        </div>
+        <div class="splitter"></div>
+
+        {% for directory in directories %}
+            <div onclick="descend('{{ directory }}')">
+                <div class="icon"></div>
+                <div class="name">{{ directory }}</div>
+            </div>
+            <div class="splitter"></div>
+        {% endfor %}
+    </div>
+
+    <div class="files">
+        {% for file in files %}
+            <div onclick="descend(`{{ file['name'] }}`)">
+                <div class="icon"></div>
+                <div class="name">{{ file['name'] }}</div>
+                <div class="mime">{{ file['mimetype'] }}</div>
+                <div class="ctime">{{ file['created'] }}</div>
+                <div class="mtime">{{ file['modified'] }}</div>
+                <div class="size">{{ file['size'] }}</div>
+            </div>
+            <div class="splitter"></div>
+        {% endfor %}
+    </div>
+</body>
+</html>
