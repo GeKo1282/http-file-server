@@ -1,4 +1,4 @@
-import json, random, string, hashlib, flask, os, base64, re, mimetypes
+import json, random, string, hashlib, flask, os, base64, re, mimetypes, cachetools
 
 class SettingsJSON(dict):
     def __init__(self, *args, file_path: str = None, **kwargs):
@@ -27,10 +27,17 @@ hash512 = lambda string: hashlib.sha512(string.encode()).hexdigest()
 
 app = flask.Flask(__name__, template_folder='static/html')
 
-def get_all_permissions(token: str, username: str, password: str):
+@cachetools.cached(cache=cachetools.TTLCache(maxsize=1, ttl=60))
+def get_all_permissions(token: str, username: str, password: str, address: str = None):
     permlist = []
 
     for permdict in settings['access']:
+        if permdict.get('address_whitelist') and not (address in permdict.get('address_whitelist', []) or any([re.match(x, address) is not None for x in permdict.get('address_whitelist', [])])):
+            continue
+
+        if permdict.get('address_blacklist') and (address in permdict.get('address_blacklist', []) or any([re.match(x, address) is not None for x in permdict.get('address_blacklist', [])])):
+            continue
+
         if token and token in permdict.get('tokens', []):
             permlist.append(permdict)
             continue
@@ -39,7 +46,7 @@ def get_all_permissions(token: str, username: str, password: str):
             permlist.append(permdict)
             continue
 
-        if permdict.get('public', False):
+        if permdict.get('no_auth', False):
             permlist.append(permdict)
             continue
 
@@ -54,16 +61,18 @@ def get_paths_from_permissions(permissions: list):
 
     return paths
 
-def validate_file_in_paths(file: str, paths: list, sudoer: bool = False):
+def validate_file_in_paths(file: str, paths: list):
     file = os.path.abspath(file)
     for path in paths:
         if re.match(path, file) or file.startswith(path):
             return True
-        
-        if sudoer:
-            return True
 
     return False
+
+def get_shortcut(name, prefix: str = None):
+    for shortcut in settings['shortcuts']:
+        if shortcut['name'] == name:
+            return prefix + shortcut['path']
 
 
 @app.route('/admin')
@@ -111,21 +120,20 @@ async def file(file: str = "/"):
     user = base64.b64decode(user).decode() if user else user
     password = flask.request.args.get('password', None)
     
-    permissions = get_all_permissions(token, user, password)
+    permissions = get_all_permissions(token, user, password, flask.request.remote_addr)
     paths = get_paths_from_permissions(permissions)
-    is_sudoer = any([True for permission in permissions if permission.get('sudo', False)])
 
-    if not validate_file_in_paths(file, paths, is_sudoer) and not token and not (user and password):
+    if not validate_file_in_paths(file, paths) and not token and not (user and password):
         return flask.render_template('interactive_login.html')
     
-    if not validate_file_in_paths(file, paths, is_sudoer):
+    if not validate_file_in_paths(file, paths):
         return flask.abort(403)
 
     if not os.path.exists(file):
         return flask.abort(404)
     
     if os.path.isdir(file):
-        if not validate_file_in_paths(file, get_paths_from_permissions([permission for permission in permissions if permission.get('browseable', False)]), is_sudoer):
+        if not validate_file_in_paths(file, get_paths_from_permissions([permission for permission in permissions if permission.get('browseable', False)])):
             return flask.abort(403)
         
         directories = []
@@ -151,12 +159,13 @@ async def file(file: str = "/"):
     
     return serve_file(file)
 
-@app.route('/<shortcut>')
+@app.route('/<path:shortcut>')
 async def shortcut(shortcut):
-    if shortcut in settings:
-        return flask.redirect(settings[shortcut])
+    target = get_shortcut(shortcut.lower(), "/file")
+    if target is None:
+        return flask.abort(404)
     
-    return flask.abort(404)
+    return flask.redirect(target)
 
 if __name__ == '__main__':
     app.run(host=settings.get('host', '0.0.0.0'), port=settings.get('port', 80), debug=settings.get('debug', False))

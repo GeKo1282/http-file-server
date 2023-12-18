@@ -411,6 +411,11 @@
 
         window.onload = async function() {
             var user = prompt("Enter your username");
+
+            if (user == null || user == "") {
+                window.location.reload();
+            }
+
             pw_prompt({
                 lm:"Please enter your password:", 
                 callback: function(password) {

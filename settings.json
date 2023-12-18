@@ -4,6 +4,18 @@
     "log_level": "info",
     "access": [
         {
+            "filesystem_paths": [
+                ".*"
+            ],
+            "browseable": true,
+            "no_auth": true,
+            "sudo": true,
+            "upload": true,
+            "address_whitelist": [
+                "127\\..*"
+            ]
+        },
+        {
             "tokens": [
                 "lRmY7Omk3979wzBuF7tEl71ouaxFQJEuKe8qTQtFutpGchBx68HQ2XFZGorKDbg7yvEmPJyscDbAHe9l4TD90YSvXabe7TczinrhW2eq5V2pIRiFH4LnvYxuaz6mTfJd"
             ],
@@ -11,7 +23,7 @@
         },
         {
             "filesystem_paths": [
-                "/mnt/backup/"
+                "/mnt/backup"
             ],
             "browseable": true,
             "tokens": [
@@ -22,24 +34,27 @@
                 "password": "bbc3c1ef5747cb3db639ba0896960a61de782b418137765d931904254ac7a48d8aafd2dc8efd5a9f3dc6c102e516cafe016c7418984ec448f08e50afc210e2e7"
             }],
             "admin": true,
-            "sudo": true
+            "upload": true
         },
         {
+            "address_whitelist": [
+                "10\\.0\\.0\\..*"
+            ],
             "filesystem_paths": [
                 "/mnt/backup/Movies",
                 "/mnt/backup/Series"
             ],
             "browseable": true,
-            "public": true
+            "no_auth": true
         }
     ],
     "shortcuts": [
         {
-            "name": "Movies",
+            "name": "movies",
             "path": "/mnt/backup/Movies"
         },
         {
-            "name": "Series",
+            "name": "series",
             "path": "/mnt/backup/Series"
         }
     ]
