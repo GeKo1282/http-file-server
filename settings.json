@@ -16,6 +16,17 @@
             ]
         },
         {
+            "filesystem_paths": [
+                "/mnt/backup"
+            ],
+            "browseable": true,
+            "no_auth": true,
+            "upload": true,
+            "address_whitelist": [
+                "10\\.0\\.0\\..*"
+            ]
+        },
+        {
             "tokens": [
                 "lRmY7Omk3979wzBuF7tEl71ouaxFQJEuKe8qTQtFutpGchBx68HQ2XFZGorKDbg7yvEmPJyscDbAHe9l4TD90YSvXabe7TczinrhW2eq5V2pIRiFH4LnvYxuaz6mTfJd"
             ],
